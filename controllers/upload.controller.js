@@ -31,5 +31,3 @@ export const UploadController = new (class UserController {
     } catch (error) {}
   }
 })();
-
-// @n1ippo

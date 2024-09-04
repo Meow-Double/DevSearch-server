@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/user.js';
 
-import { dirname, join } from 'path';
+import path, { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -78,7 +78,6 @@ export const UserController = new (class UserController {
   }
   async auth(req, res) {
     try {
-      console.log(req.userId);
       const user = await UserModel.findById(req.userId);
       if (!user) {
         return res.status(404).json({ message: 'Пользователь не найден' });
@@ -89,5 +88,62 @@ export const UserController = new (class UserController {
     } catch (error) {
       res.status(500).json({ message: 'Не удалось зарегестрироваться' });
     }
+  }
+  async updatePassword(req, res) {
+    try {
+      const userId = req.userId;
+      const { oldPassword, newPassword } = req.body;
+
+      const user = await UserModel.findById(userId);
+
+      if (!user) {
+        return res.status(402).json({});
+      }
+
+      const isValidPSW = await bcrypt.compare(oldPassword, user._doc.passwordHash);
+
+      if (!isValidPSW) {
+        return res.status(402).json({});
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const newPasswordHash = await bcrypt.hash(newPassword, salt);
+
+      await UserModel.updateOne(
+        {
+          _id: user._id,
+        },
+        { passwordHash: newPasswordHash },
+      );
+
+      return res.json({ message: 'Пароль успешно сменён!' });
+    } catch (error) {}
+  }
+  async updateEmail(req, res) {
+    try {
+      const userId = req.userId;
+      const { newEmail, password } = req.body;
+
+      const user = await UserModel.findById(userId);
+
+      if (!user) {
+        return res.status(402).json({});
+      }
+
+      const isValidPSW = await bcrypt.compare(password, user._doc.passwordHash);
+
+      if (!isValidPSW) {
+        return res.status(402).json({});
+      }
+
+      await UserModel.updateOne(
+        {
+          _id: user._id,
+        },
+        { email: newEmail },
+      );
+
+      return res.json({ message: 'Почта успешно сменена!' });
+    } catch (error) {}
   }
 })();

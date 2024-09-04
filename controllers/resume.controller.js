@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import uuid4 from 'uuid4';
 import UserModel from '../models/user.js';
 import ResumeModel from '../models/resume.js';
-import TestModel from '../models/test.js';
 
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -74,4 +73,3 @@ export const ResumeController = new (class UserController {
   }
 })();
 
-// @n1ippo
