@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/user.js';
+import RespondModel from '../models/respond.js';
 
 import path, { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
@@ -38,6 +39,10 @@ export const UserController = new (class UserController {
         },
       );
 
+      const respond = new RespondModel({
+        user: user._id,
+      });
+      respond.save();
       const { passwordHash, ...userData } = user._doc;
       return res.json({ user: { ...userData }, token });
     } catch (error) {

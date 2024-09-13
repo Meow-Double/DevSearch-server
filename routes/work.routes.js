@@ -6,6 +6,7 @@ export const router = new Router();
 
 router.post('/create', checkAuth, WorkController.createWork);
 router.post('/upload', fileMiddleware.single('work-bg'), WorkController.uploadImg);
+router.get('/my-works',checkAuth, WorkController.getMyWorks);
 // router.get('/:id', WorkController.getWork);
 router.get('', WorkController.getWorkCards);
 router.get('/:id', WorkController.getWork);

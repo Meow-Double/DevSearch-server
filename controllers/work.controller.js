@@ -68,4 +68,20 @@ export const WorkController = new (class WorkController {
       }
     } catch (error) {}
   }
+  async getMyWorks(req, res) {
+    try {
+      const userId = req.userId;
+
+      const worksData = await WorkModel.find({ user: userId });
+
+      const newWorks = worksData.map((work) => ({
+        id: work._id,
+        specialization: work.specialization,
+        watching: work.watching,
+        responded: work.responded,
+      }));
+
+      res.json(newWorks);
+    } catch (error) {}
+  }
 })();

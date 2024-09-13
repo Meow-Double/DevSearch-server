@@ -5,4 +5,4 @@ import { checkAuth } from '../utils/checkAuth.js';
 
 export const router = new Router();
 
-router.post('/', fileMiddleware.single("avatarka"), checkAuth, UploadController.upload);
+

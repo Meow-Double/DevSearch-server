@@ -47,13 +47,13 @@ const WorkSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    watching_number: {
-      type: Number,
-      default: 0,
+    watching: {
+      type: Array,
+      default: [],
     },
-    responded_number: {
-      type: Number,
-      default: 0,
+    responded: {
+      type: Array,
+      default: [],
     },
     author: {
       type: Object,
