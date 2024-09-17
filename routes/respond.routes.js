@@ -7,3 +7,4 @@ export const router = new Router();
 router.get('/', checkAuth, RespondController.getResponds);
 router.post('/', checkAuth, RespondController.respondWork);
 router.post('/watching', checkAuth, RespondController.addWatching);
+router.post('/delete/:workId', RespondController.deleteWatching);

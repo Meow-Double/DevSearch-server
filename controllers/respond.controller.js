@@ -19,17 +19,16 @@ export const RespondController = new (class UserController {
     try {
       const body = req.body;
       const userId = req.userId;
-      const userWorks = await WorkModel.find({user: userId});
+      const userWorks = await WorkModel.find({ user: userId });
 
-      
-      const findElement = userWorks.find(item => String(item._id) === body.workId);
-     
-      if(findElement){
-        return res.status(401).json({message:"Вы не можете откликнуться на свою же вакансию"})
+      const findElement = userWorks.find((item) => String(item._id) === body.workId);
+
+      if (findElement) {
+        return res.status(401).json({ message: 'Вы не можете откликнуться на свою же вакансию' });
       }
 
       const respondsData = await RespondModel.findOne({ user: userId });
-      
+
       const existId = respondsData._doc.responds.find((item) => item.workId === body.workId);
 
       if (existId) {
@@ -64,7 +63,7 @@ export const RespondController = new (class UserController {
       const { workId, ...other } = req.body;
       // const userId = req.userId;
       const workData = await WorkModel.findById(workId);
-     
+
       const existWork = workData.watching.find((item) => item.id === other.id);
 
       if (existWork) {
@@ -75,17 +74,17 @@ export const RespondController = new (class UserController {
       });
 
       const respondData = await RespondModel.findOne({ user: other.id });
-     
+
       const newResponds = respondData.responds.map((item) => {
         if (item.workId === workId) {
           return { ...item, status: 'Расматривается' };
         }
         return item;
       });
-     
+
       await RespondModel.updateOne(
         {
-          user: other.id ,
+          user: other.id,
         },
         {
           responds: newResponds,
@@ -95,14 +94,28 @@ export const RespondController = new (class UserController {
       res.json({ message: 'Пользователь был добавлен на расмотрение' });
     } catch (error) {}
   }
-  async deleteWatching(req, res){
+  async deleteWatching(req, res) {
     try {
-         // const persinId = req.body.id;
-        //  const { workId, ...other } = req.body;
-         
-         res.json({ message: 'Пользователь был добавлен на расмотрение' });
-    } catch (error) {
+      // const persinId = req.body.id;
+      //  const { workId, ...other } = req.body;
+      const { userId } = req.body;
+      const { workId } = req.params;
 
-    }
+      const MyWorkCard = await WorkModel.findById(workId);
+      const watching = MyWorkCard.watching;
+
+      const newWatching = watching.filter((item) => item.id !== userId);
+
+      await WorkModel.updateOne(
+        {
+          _id: workId,
+        },
+        {
+          watching: newWatching,
+        },
+      );
+
+      res.json({ message: 'Пользователь был удалён с расмотрения', watching: newWatching });
+    } catch (error) {}
   }
 })();

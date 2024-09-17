@@ -45,6 +45,34 @@ export const WorkController = new (class WorkController {
   }
   async getWorkCards(req, res) {
     try {
+      const query = req.query;
+      if (Object.keys(query).length !== 0) {
+        const specializationArray = query.specialization && query.specialization.split(',');
+        const queryParams = {};
+
+        if (specializationArray.length !== 0) {
+          queryParams.specializations = { $in: specializationArray };
+        }
+
+        if (query.text) {
+          queryParams.specialization ={ $regex: query.text, $options: 'i' };
+        }
+
+        const works = await WorkModel.find(queryParams);
+
+        const workCards = works.map((item) => ({
+          specialization: item.specialization,
+          workExperience: item.workExperience,
+          paycheck: item.paycheck,
+          company_name: item.company_name,
+          specialization_desc: item.specialization_desc,
+          id: item._id,
+        }));
+
+
+        return res.json(workCards);
+      }
+
       const workData = await WorkModel.find().sort({ _id: 1 }).limit(10);
 
       const workCards = workData.map((item) => ({
@@ -58,7 +86,7 @@ export const WorkController = new (class WorkController {
 
       res.json(workCards);
     } catch (error) {
-      res.json('err');
+      res.json({message:"ошибка"});
     }
   }
   async uploadImg(req, res) {
